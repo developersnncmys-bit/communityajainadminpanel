@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Light theme (default) */
+  :root {
+    --ink-50: 246 246 247;
+    --ink-100: 227 227 230;
+    --ink-400: 138 138 147;
+    --ink-600: 82 82 91;
+    --ink-800: 39 39 42;
+    --ink-900: 24 24 27;
+    --surface: 255 255 255;
+  }
+  /* Dark theme — neutral scale inverts (light bg utils become dark, dark text becomes light) */
+  .dark {
+    --ink-50: 18 20 26;    /* page background / subtle fills */
+    --ink-100: 42 46 56;   /* borders / dividers */
+    --ink-400: 138 141 152;/* muted text */
+    --ink-600: 165 167 178;/* secondary text */
+    --ink-800: 228 228 231;/* body text */
+    --ink-900: 244 244 245;/* headings */
+    --surface: 27 30 38;   /* cards, inputs, popovers */
+  }
+  body {
+    @apply bg-ink-50 text-ink-800 antialiased;
+  }
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface rounded-2xl shadow-card border border-ink-100/70;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-soft;
+  }
+  .btn-ghost {
+    @apply btn bg-ink-50 text-ink-800 hover:bg-ink-100 border border-ink-100;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+  .nav-link {
+    @apply flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium text-brand-100/90 transition hover:bg-white/10 hover:text-white;
+  }
+  .nav-link-active {
+    @apply bg-white text-brand-700 shadow-soft hover:bg-white hover:text-brand-700;
+  }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { @apply bg-ink-100 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-ink-400/50; }
