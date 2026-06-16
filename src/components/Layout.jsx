@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, ListChecks, CheckSquare, Wallet, Package,
-  BarChart3, ShieldCheck, Bell, Search, Menu, X, ChevronRight, Sun, Moon, CalendarClock,
+  BarChart3, ShieldCheck, Bell, Search, Menu, X, ChevronRight, Sun, Moon, CalendarClock, LogOut,
 } from 'lucide-react'
 import { formatINR } from '../data/mock'
 import { useStore } from '../store'
@@ -19,8 +19,9 @@ const nav = [
 ]
 
 function Sidebar({ open, onClose }) {
-  const { community, approvals } = useStore()
+  const { community, approvals, user, logout } = useStore()
   const badges = { approvals: approvals.length }
+  const initials = (user?.name || community.principal).split(' ').map((p) => p[0]).slice(0, 2).join('')
   return (
     <>
       <div
@@ -71,11 +72,19 @@ function Sidebar({ open, onClose }) {
         </nav>
 
         <div className="mt-4 flex items-center gap-3 rounded-2xl bg-white/10 p-3">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-[#ffffff] font-bold text-brand-700">RS</span>
-          <div className="leading-tight">
-            <p className="text-sm font-semibold text-white">{community.principal}</p>
-            <p className="text-xs text-brand-200">Principal</p>
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-[#ffffff] text-sm font-bold text-brand-700">{initials}</span>
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-sm font-semibold text-white">{user?.name || community.principal}</p>
+            <p className="text-xs text-brand-200">{user?.role || 'Principal'}</p>
           </div>
+          <button
+            onClick={logout}
+            title="Sign out"
+            aria-label="Sign out"
+            className="ml-auto grid h-9 w-9 shrink-0 place-items-center rounded-xl text-brand-100 hover:bg-white/15 hover:text-white"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </aside>
     </>

@@ -67,6 +67,33 @@ export function StoreProvider({ children }) {
     setAuditLog((l) => [{ who, action, when: now() }, ...l])
   }, [])
 
+  // ---- Auth ------------------------------------------------------------
+  const [user, setUser] = useState(() => {
+    if (typeof window === 'undefined') return null
+    try { const s = localStorage.getItem('jp-user'); return s ? JSON.parse(s) : null } catch { return null }
+  })
+  useEffect(() => {
+    if (user) localStorage.setItem('jp-user', JSON.stringify(user))
+    else localStorage.removeItem('jp-user')
+  }, [user])
+
+  const login = useCallback(({ email, password }) => {
+    if (!email?.trim() || !password?.trim()) {
+      toast('Enter your email and password', 'error')
+      return false
+    }
+    const base = email.split('@')[0].replace(/[._-]+/g, ' ').trim()
+    const name = base.replace(/\b\w/g, (c) => c.toUpperCase()) || 'Admin'
+    setUser({ name, email: email.trim(), role: 'Community Admin' })
+    toast(`Welcome back, ${name.split(' ')[0]}`)
+    return true
+  }, [toast])
+
+  const logout = useCallback(() => {
+    setUser(null)
+    toast('You have been signed out')
+  }, [toast])
+
   // ---- Members ---------------------------------------------------------
   const addMember = useCallback((data) => {
     const m = {
@@ -220,6 +247,7 @@ export function StoreProvider({ children }) {
 
   const value = useMemo(() => ({
     community, members, activities, approvals, orders, walletTxns, admins, auditLog,
+    user, login, logout,
     theme, toggleTheme,
     toasts, toast, dismissToast,
     addMember, importMembers, toggleMemberStatus,
@@ -228,7 +256,8 @@ export function StoreProvider({ children }) {
     topUpWallet, placeBulkOrder, advanceOrder,
     grantAdmin, revokeAdmin,
   }), [
-    community, members, activities, approvals, orders, walletTxns, admins, auditLog, theme, toggleTheme, toasts,
+    community, members, activities, approvals, orders, walletTxns, admins, auditLog, user, login, logout,
+    theme, toggleTheme, toasts,
     toast, dismissToast, addMember, importMembers, toggleMemberStatus, addActivity, toggleActivityStatus,
     approveCompletion, rejectCompletion, topUpWallet, placeBulkOrder, advanceOrder, grantAdmin, revokeAdmin,
   ])
