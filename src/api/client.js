@@ -4,7 +4,7 @@
 // Sign in as the community's Principal (principal@mahavir.com / principal123)
 // to unlock members, activities, approvals, wallet top-up and access control.
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const BASE = import.meta.env.VITE_API_URL || 'https://jainbackend.vercel.app/api'
 const TOKEN_KEY = 'jp-token'
 
 export const getToken = () => {
