@@ -15,13 +15,13 @@ export default function Login() {
   // Already signed in → go to the dashboard (or wherever they came from).
   if (user) return <Navigate to={location.state?.from || '/'} replace />
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault()
-    if (login(form)) navigate(location.state?.from || '/', { replace: true })
+    if (await login(form)) navigate(location.state?.from || '/', { replace: true })
   }
 
   function useDemo() {
-    setForm({ email: 'rajesh.shah@jainpatashala.org', password: 'demo1234' })
+    setForm({ email: 'principal@mahavir.com', password: 'principal123' })
   }
 
   return (

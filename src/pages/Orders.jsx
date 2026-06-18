@@ -4,21 +4,23 @@ import { PageHeader, Table, StatusBadge, Badge, Modal, Field, Input, Select } fr
 import { formatINR } from '../data/mock'
 import { useStore } from '../store'
 
-const blank = { item: '', qty: 10, target: 'Community', unitRupees: 300 }
+const blank = { giftId: '', qty: 10, target: 'Community' }
 
 export default function Orders() {
-  const { orders, community, placeBulkOrder, advanceOrder } = useStore()
+  const { orders, community, gifts, placeBulkOrder, advanceOrder } = useStore()
   const [tab, setTab] = useState('All')
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState(blank)
 
   const list = tab === 'All' ? orders : orders.filter((o) => o.type === tab)
-  const totalRupees = (Number(form.qty) || 0) * (Number(form.unitRupees) || 0)
+  const selectedGift = gifts.find((g) => g._id === form.giftId)
+  const unitRupees = selectedGift ? selectedGift.costPaise / 100 : 0
+  const totalRupees = (Number(form.qty) || 0) * unitRupees
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault()
-    if (!form.item.trim()) return
-    const ok = placeBulkOrder({ item: form.item, qty: form.qty, target: form.target, totalRupees })
+    if (!form.giftId) return
+    const ok = await placeBulkOrder({ giftId: form.giftId, qty: form.qty, target: form.target })
     if (ok) { setForm(blank); setOpen(false) }
   }
 
@@ -92,15 +94,20 @@ export default function Orders() {
       >
         <form id="bulk-order" onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Field label="Gift item">
-              <Input value={form.item} onChange={(e) => setForm({ ...form, item: e.target.value })} placeholder="e.g. Toy Lorry (event)" required />
+            <Field label="Gift item" hint="Pick from the platform catalog. Unit cost is set by the gift.">
+              <Select value={form.giftId} onChange={(e) => setForm({ ...form, giftId: e.target.value })} required>
+                <option value="">Select a gift…</option>
+                {gifts.map((g) => (
+                  <option key={g._id} value={g._id}>{g.name} — {formatINR(g.costPaise)} each</option>
+                ))}
+              </Select>
             </Field>
           </div>
           <Field label="Quantity">
             <Input type="number" min="1" value={form.qty} onChange={(e) => setForm({ ...form, qty: e.target.value })} />
           </Field>
           <Field label="Unit cost (₹)">
-            <Input type="number" min="0" value={form.unitRupees} onChange={(e) => setForm({ ...form, unitRupees: e.target.value })} />
+            <Input type="number" value={unitRupees} readOnly disabled />
           </Field>
           <div className="sm:col-span-2">
             <Field label="Delivery target">

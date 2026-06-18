@@ -9,13 +9,13 @@ export default function Access() {
   const { admins, auditLog, grantAdmin, revokeAdmin } = useStore()
   const [open, setOpen] = useState(false)
   const [confirm, setConfirm] = useState(null) // admin name to revoke
-  const [form, setForm] = useState({ name: '', scope: scopes[0] })
+  const [form, setForm] = useState({ name: '', email: '', password: '', scope: scopes[0] })
 
   function submit(e) {
     e.preventDefault()
-    if (!form.name.trim()) return
+    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) return
     grantAdmin(form)
-    setForm({ name: '', scope: scopes[0] })
+    setForm({ name: '', email: '', password: '', scope: scopes[0] })
     setOpen(false)
   }
 
@@ -80,6 +80,12 @@ export default function Access() {
         <form id="grant-form" onSubmit={submit} className="space-y-4">
           <Field label="Admin name">
             <Input autoFocus value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Pooja Mehta" required />
+          </Field>
+          <Field label="Email address">
+            <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="pooja@community.org" required />
+          </Field>
+          <Field label="Temporary password" hint="The admin signs in with this and can change it later.">
+            <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="At least 6 characters" required />
           </Field>
           <Field label="Scope" hint="Limits which areas of the panel this admin can use.">
             <Select value={form.scope} onChange={(e) => setForm({ ...form, scope: e.target.value })}>
